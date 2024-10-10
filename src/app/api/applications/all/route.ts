@@ -33,6 +33,7 @@ export async function GET(req: Request) {
       .select('shortlisted interviewSchedule'); // Select only required fields
 
     // Respond with applications
+    console.log(applications);
     return NextResponse.json({ applications }, { status: 200 });
   } catch (error) {
     console.error('Error fetching applications:', error);

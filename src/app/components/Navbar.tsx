@@ -28,16 +28,16 @@ const VerticalNavbar = ({ userRole }: { userRole: 'company' | 'applicant' }) => 
               <>
                 <li>
                   <Link href="/company/jobcreate">
-                    <div className="hover:text-indigo-400">List Opening</div>
+                    <div className="hover:text-indigo-400">List New Opening</div>
                   </Link>
                 </li>
                 <li>
                   <Link href="/company/jobpostings">
-                    <div className="hover:text-indigo-400">Job Postings</div>
+                    <div className="hover:text-indigo-400">View All Application</div>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/company/applications">
+                  <Link href="/company/jobapplications">
                     <div className="hover:text-indigo-400">Manage Applications</div>
                   </Link>
                 </li>

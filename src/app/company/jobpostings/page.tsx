@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import ApplicationDialog from '@/app/components/ApplicationDialog'; // Import the dialog component
 
 interface Application {
   _id: string;
@@ -11,7 +12,25 @@ interface Application {
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null); // Use proper typing for selectedApplication
 
+  // Handle View Application button click
+  const handleViewApplication = (application: Application) => {
+    setSelectedApplication(application); // Set the selected application
+    setShowDialog(true); // Open the dialog
+  };
+
+  // Handle status update from the dialog box
+  const handleApplicationUpdate = (updatedApplication: Application) => {
+    setApplications((prevApplications) =>
+      prevApplications.map((app) =>
+        app._id === updatedApplication._id ? updatedApplication : app
+      )
+    );
+  };
+
+  // Fetch applications on component mount
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -23,7 +42,7 @@ const ApplicationsPage = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
-        console.log(response);
+
         const data = await response.json();
         setApplications(data.applications);
       } catch (error) {
@@ -33,11 +52,6 @@ const ApplicationsPage = () => {
 
     fetchApplications();
   }, []);
-
-  const handleClick = (id: string) => {
-    console.log('Application ID:', id);
-    // Handle the logic when the button is clicked with the application ID
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -57,7 +71,7 @@ const ApplicationsPage = () => {
               Interview Schedule: {application.interviewSchedule || 'Not Scheduled'}
             </p>
             <button
-              onClick={() => handleClick(application._id)}
+              onClick={() => handleViewApplication(application)}
               className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
               View Application
@@ -65,6 +79,19 @@ const ApplicationsPage = () => {
           </div>
         ))}
       </div>
+
+      {/* Render the dialog if showDialog is true and selectedApplication is set */}
+      {showDialog && selectedApplication && (
+        <ApplicationDialog
+          applicationId={selectedApplication._id}
+          jobTitle={selectedApplication.job.title}
+          applicantEmail={selectedApplication.applicant.email}
+          shortlisted={selectedApplication.shortlisted}
+          interviewSchedule={selectedApplication.interviewSchedule}
+          onClose={() => setShowDialog(false)} // Close the dialog when needed
+          onUpdate={handleApplicationUpdate} // Callback for updating the status
+        />
+      )}
     </div>
   );
 };

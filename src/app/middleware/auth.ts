@@ -4,10 +4,36 @@ import User from '../models/User';
 import connectMongo from '../lib/mongodb';
 import { cookies } from 'next/headers';
 
+// List of allowed origins (Add your frontend domain here)
+const allowedOrigins = ['http://localhost:3000']; // You can add other origins if needed
+
 // Verify token and fetch the user from the database
 export async function verifyTokenAndFetchUser(req: Request) {
   console.log('inside middleware');
-  
+
+  // CORS configuration
+  const origin = req.headers.get('origin');
+
+  // Set CORS headers if the request is from an allowed origin
+  if (origin && allowedOrigins.includes(origin)) {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
+    // Handle preflight (OPTIONS) requests
+    if (req.method === 'OPTIONS') {
+      return new NextResponse(null, { status: 204, headers: corsHeaders });
+    }
+
+    NextResponse.next().headers.set('Access-Control-Allow-Origin', origin);
+    NextResponse.next().headers.set('Access-Control-Allow-Credentials', 'true');
+    NextResponse.next().headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    NextResponse.next().headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+
   // 1. Try to get the token from the Authorization header
   const authHeader = req.headers.get('authorization');
   let token: string | undefined;
