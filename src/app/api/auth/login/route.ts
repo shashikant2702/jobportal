@@ -27,8 +27,15 @@ export async function POST(req: Request) {
 
     // Generate a JWT token for the user
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-
-    return NextResponse.json({ token }, { status: 200 });
+    const response = NextResponse.json({token},{status:200})
+    response.cookies.set('token', token, {
+      httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
+      sameSite: 'lax', // Adjust based on your cross-site needs ('Lax' or 'None')
+      path: '/', // Cookie available throughout the entire site
+      maxAge: 60 * 60, // 1 hour in seconds
+    });
+    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });

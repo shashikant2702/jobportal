@@ -1,4 +1,3 @@
-import { models } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
@@ -37,7 +36,17 @@ export async function POST(req: Request) {
     // Generate a JWT token for the user
     const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 
-    return NextResponse.json({ token }, { status: 201 });
+    // Set the token as an httpOnly cookie
+    const response = NextResponse.json({ message: 'Registration successful' });
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60, // 1 hour
+    });
+
+    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });

@@ -18,6 +18,7 @@ export async function GET() {
 
 // Create a new job (only companies can post jobs)
 export async function POST(req: Request) {
+  console.log(req)
   const user = await verifyTokenAndFetchUser(req);
   if (user instanceof NextResponse) return user; // Return the error if verification fails
 
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     });
 
     await newJob.save();
-    return NextResponse.json(newJob, { status: 201 });
+    return NextResponse.json({message:'Jobs created '}, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: 'Error creating job' }, { status: 500 });
   }
