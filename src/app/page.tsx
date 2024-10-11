@@ -28,7 +28,9 @@ export default function HomePage() {
           </Link>
         </div>
       ) : (
-       <></>
+       <>
+       
+       </>
         // <VerticalNavbar userRole={'company'} /> // Render navbar if logged in
       )}
     </div>

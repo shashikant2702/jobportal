@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 
-const VerticalNavbar = ({ userRole }: { userRole: 'company' | 'applicant' }) => {
+const VerticalNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Get role from the cookies
+    const role = Cookies.get('role');
+    setUserRole(role);
+  }, []);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -14,8 +23,15 @@ const VerticalNavbar = ({ userRole }: { userRole: 'company' | 'applicant' }) => 
 
   const logout = () => {
     // Logic to log the user out (e.g., clear cookies, tokens)
+    Cookies.remove('token');
+    Cookies.remove('role');
     router.push('/login');
   };
+
+  // Don't render the component on /login and /register routes
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
 
   return (
     <div className="relative">
@@ -130,20 +146,6 @@ const VerticalNavbar = ({ userRole }: { userRole: 'company' | 'applicant' }) => 
                   <div className="block py-2 hover:text-indigo-400">Profile</div>
                 </Link>
               </li>
-              <footer className="absolute bottom-0  w-full bg-indigo-800">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-              <span className="text-sm">User</span>
-            </div>
-            <button
-              onClick={logout}
-              className="px-2 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </footer>
             </>
           ) : (
             <>
@@ -167,20 +169,6 @@ const VerticalNavbar = ({ userRole }: { userRole: 'company' | 'applicant' }) => 
                   <div className="block py-2 hover:text-indigo-400">Profile</div>
                 </Link>
               </li>
-              <footer className="absolute bottom-0 p-4 w-full bg-indigo-800">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-              <span className="text-sm">User</span>
-            </div>
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </footer>
             </>
           )}
         </ul>

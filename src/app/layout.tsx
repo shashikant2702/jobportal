@@ -26,17 +26,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="flex min-h-screen">
-          {/* Vertical Navbar */}
-          <aside className="w-1/4 bg-gray-800 text-white">
-            <VerticalNavbar userRole="company" />
+          {/* Sidebar */}
+          <aside className="lg:w-1/4 bg-gray-800 text-white fixed top-0 left-0 h-screen hidden lg:block">
+            <VerticalNavbar />
           </aside>
 
           {/* Main content */}
-          <main className="flex-1 p-8 bg-gray-100 ml-1/4">
+          <main className="flex-1 lg:ml-[25%] p-4">
             {children}
           </main>
         </div>
